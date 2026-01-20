@@ -18,6 +18,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node dist/main.js",
+		"server": "nohup npm start > bot.log 2>&1 &",
 		"start:dev": "ts-node src/main.ts",
 		"start:console": "ts-node src/system/app.ts"
 	},
