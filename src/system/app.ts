@@ -26,7 +26,7 @@ const { interactions, message, availableAnswers } = translation;
 
 class Zork {
 	private answer?: string;
-	private chapters = new Array(Part.I, Part.II, Part.III, Part.IV, Part.V);
+	private readonly chapters = new Array(Part.I, Part.II, Part.III, Part.IV, Part.V);
 
 	constructor() {
 		this.showGreetings();
@@ -73,10 +73,10 @@ class Zork {
 		await this.askToLeave();
 	}
 
-	private correctAnswer = (chapter: Part): boolean =>
+	private readonly correctAnswer = (chapter: Part): boolean =>
 		availableAnswers[chapter].includes(this.answer);
 
-	private clearAnswer = (): void => (this.answer = undefined);
+	private readonly clearAnswer = (): void => (this.answer = undefined);
 
 	private async askToLeave(): Promise<void> {
 		const confirm = await input(message['Do you want to continue? (Y/N) ']);

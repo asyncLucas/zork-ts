@@ -10,9 +10,9 @@
 
 import 'dotenv/config';
 import fs from 'node:fs';
-import { Message } from 'typegram/message';
 import LocalSession from 'telegraf-session-local';
-import { Markup, Telegraf, Telegram } from 'telegraf';
+import { Telegraf, Telegram, Markup } from 'telegraf';
+import type { Message } from 'telegraf/types';
 
 import { Part } from './models/Part';
 import { ZorkContext } from './models/ZorkContext';
@@ -68,10 +68,14 @@ class Main {
 		this.bot.use(new LocalSession().middleware());
 	}
 
-	private startBot(): void {
-		this.bot.start(ctx => {
-			this.mission(ctx);
-			this.languageSelection(ctx).catch(error => this.sendErrorMessage(error));
+	private async startBot(): Promise<void> {
+		this.bot.start(async ctx => {
+			try {
+				this.mission(ctx);
+				await this.languageSelection(ctx);
+			} catch (error) {
+				this.sendErrorMessage(error);
+			}
 		});
 	}
 
@@ -115,11 +119,12 @@ class Main {
 		const { done, value: currentPart } = this.iterator.next();
 
 		if (!done) {
-			ctx.session.currentChapter = currentPart as Part;
+			ctx.session.currentChapter = currentPart;
 			this.currentChapter(ctx);
-		} else {
-			this.gameCompleted(ctx, ctx.session.translation.message['Game Completed']);
+			return;
 		}
+
+		this.gameCompleted(ctx, ctx.session.translation.message['Game Completed']);
 	}
 
 	private currentChapter(ctx: ZorkContext): void {
@@ -189,12 +194,12 @@ class Main {
 	}
 
 	private userInput(): void {
-		this.bot.on('text', ctx => {
-			const answer = this.parseUserInput(ctx.message.text);
+		this.bot.on('message', ctx => {
+			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
 
 			const correctInteration =
-				ctx.session.translation.interactions[ctx.session.currentChapter][answer];
+				ctx.session?.translation?.interactions[ctx.session?.currentChapter][answer];
 
 			if (this.correctAnswer(ctx, answer)) {
 				this.resetUserAttempts();
@@ -229,8 +234,8 @@ class Main {
 	private parseUserInput(text: string): string {
 		return text
 			.normalize('NFD')
-			.replace(/[\u0300-\u036f]/g, '')
-			.replace(/[^a-zA-Z ]/g, '')
+			.replaceAll(/[\u0300-\u036f]/g, '')
+			.replaceAll(/[^a-zA-Z ]/g, '')
 			.toLowerCase()
 			.trim();
 	}

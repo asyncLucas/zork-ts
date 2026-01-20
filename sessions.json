@@ -1,0 +1,78 @@
+{
+  "sessions": [
+    {
+      "id": "145510692:145510692",
+      "data": {
+        "answer": "go south",
+        "currentChapter": "II",
+        "translation": {
+          "message": {
+            "What do you do? ": "\nWhat do you do? ",
+            "Do you want to continue? (Y/N) ": "\nDo you want to continue? (Y/N) ",
+            "Suicide": "You throw yourself down the staircase as an attempt at suicide. You die. 💀",
+            "Game Over": "💀💀💀 Game Over! 💀💀💀",
+            "Game Completed": "🎉  You have found the Jade Statue 🏆 and have completed your quest! 🎉",
+            "Try again": "Keep trying, your answer is #percent% correct... You have #attempts attempts left...",
+            "I": "✅1️⃣✅ West of House 🏠\n You are standing in an open field west of a white house, with a boarded front door. 🚪\n There is a small mailbox here. 📫",
+            "II": "✅2️⃣✅ South of House 🏠\n You are facing the south side of a white house. There is no door here, and all the windows are boarded. 🚪",
+            "III": "✅3️⃣✅ You are in a clearing, with a forest surrounding you on all sides. A path leads south. 🧭\nThere is an open grating, descending into darkness.",
+            "IV": "✅4️⃣✅ You are in a tiny cave with a dark, forbidding staircase leading down.\n 💀 There is a skeleton of a human male in one corner.",
+            "V": "✅5️⃣✅ You have entered a mud-floored room.\n Lying half buried in the mud is an old trunk, bulging with jewels."
+          },
+          "availableAnswers": {
+            "I": [
+              "go south"
+            ],
+            "II": [
+              "go east"
+            ],
+            "III": [
+              "descend staircase"
+            ],
+            "IV": [
+              "descend staircase",
+              "go down staircase",
+              "scale staircase"
+            ],
+            "V": [
+              "open trunk",
+              "open the trunk"
+            ]
+          },
+          "interactions": {
+            "I": {
+              "take mailbox": "It is securely anchored. 🔒",
+              "open mailbox": "📫 Opening the small mailbox reveals a leaflet.",
+              "go east": "🚪 The door is boarded and you cannot remove the boards.",
+              "open door": "🚪 The door cannot be opened.",
+              "take boards": "The boards are securely fastened.",
+              "look at house": "🏠 The house is a beautiful colonial house which is painted white. It is clear that the owners must have been extremely wealthy.",
+              "read leaflet": "🎈 WELCOME TO ZORK the Unofficial TypeScript Version of Zork. 🎈\n ZORK is a game of adventure, danger, and low cunning. ☠️ \n In it you will explore some of the most amazing territory ever seen by mortals. 🗺️ \n No computer should be without one! 💻",
+              "drop leaflet": "Dropped. 🍃"
+            },
+            "II": {
+              "go west": "You would need a machete 🔪 to go further west.",
+              "go north": "⛰️ The forest becomes impenetrable to the North.",
+              "go south": "⛈️ Storm-tossed trees block your way."
+            },
+            "III": {
+              "light up room": "💡 You would need a torch or lamp to do that.",
+              "go south": "👹 You see a large ogre and turn around."
+            },
+            "IV": {
+              "take skeleton": "😐 Why would you do that? Are you some sort of sicko?",
+              "smash skeleton": "😐 Sick person. Have some respect mate.",
+              "light up room": "💡 You would need a torch or lamp to do that.",
+              "break skeleton": "⁉️ I have two questions: Why and With What?"
+            },
+            "V": {
+              "open trunk": "🏆🏆🏆"
+            }
+          },
+          "info": "/**\n ZORK I: The Great Underground Empire\n Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\n ZORK is a registered trademark of Infocom, Inc.\n Revision 88 / Serial number 840726\n Source at: https://web.mit.edu/marleigh/www/portfolio/Files/zork/transcript.html\n/"
+        },
+        "language": "en"
+      }
+    }
+  ]
+}
