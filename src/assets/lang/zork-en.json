@@ -10,14 +10,178 @@
 		"II": "✅2️⃣✅ South of House 🏠\n You are facing the south side of a white house. There is no door here, and all the windows are boarded. 🚪",
 		"III": "✅3️⃣✅ You are in a clearing, with a forest surrounding you on all sides. A path leads south. 🧭\nThere is an open grating, descending into darkness.",
 		"IV": "✅4️⃣✅ You are in a tiny cave with a dark, forbidding staircase leading down.\n 💀 There is a skeleton of a human male in one corner.",
-		"V": "✅5️⃣✅ You have entered a mud-floored room.\n Lying half buried in the mud is an old trunk, bulging with jewels."
+		"V": "✅5️⃣✅ You have entered a mud-floored room.\n Lying half buried in the mud is an old trunk, bulging with jewels.",
+		"VI": "✅6️⃣✅ Temple 🏛️\n You are at the north end of a large temple. On the east wall is an ancient inscription. Below is a staircase leading down. ⬇️\n There is a brass bell here. 🔔",
+		"VII": "✅7️⃣✅ Altar 🕯️\n You are at the south end of a large temple. In front of you is an altar. In one corner is a small hole in the floor. 🕳️\n On the altar is a large black book, open to page 569. 📖",
+		"VIII": "✅8️⃣✅ Dam Lobby 🌊\n This room appears to have been the waiting room for dam tours. There are doorways to the north and east marked 'Private'. 🚪\n A matchbook is here. 🔥",
+		"IX": "✅9️⃣✅ Chasm 🌉\n A chasm runs southwest to northeast. You are on the south side where a crack opens into a passage. ⛰️",
+		"X": "✅🔟✅ Maintenance Room 🔧\n This appears to be a maintenance room. Most equipment is gone. On the wall are buttons colored blue, yellow, brown, and red. 🔴🟡🟤🔵\n There is a wrench and screwdriver here. 🔧",
+		"XI": "✅1️⃣1️⃣✅ Loud Room 📢\n You are in a large room with a ceiling lost in darkness. The room is deafeningly loud with rushing water sounds. 🌊💧\n There is a large platinum bar on the ground. ✨",
+		"XII": "✅1️⃣2️⃣✅ Entrance to Hades 🔥\n You are outside a large gateway inscribed 'Abandon every hope all ye who enter here!' 💀\n Evil spirits block the way through. 👻",
+		"XIII": "✅1️⃣3️⃣✅ Mirror Room 🪞\n You are in a large square room. On the south wall is an enormous mirror filling the entire wall. ✨",
+		"XIV": "✅1️⃣4️⃣✅ Bat Room 🦇\n You are in a small room with doors to the east and south. In the corner is a large vampire bat. 🦇\n There is an exquisite jade figurine here. 🗿",
+		"XV": "✅1️⃣5️⃣✅ Sandy Cave 🏖️\n This is a sand-filled cave. You notice the sand looks recently disturbed. 🏝️\n Something valuable might be buried here! 💎"
 	},
-	"availableAnswers": {
-		"I": ["go south"],
-		"II": ["go east"],
-		"III": ["descend staircase"],
-		"IV": ["descend staircase", "go down staircase", "scale staircase"],
-		"V": ["open trunk", "open the trunk"]
+	"commands": {
+		"navigation": {
+			"patterns": [
+				"^(go|move|walk|head|travel)\\s+(to\\s+)?(the\\s+)?(?<direction>\\w+)"
+			],
+			"synonyms": {
+				"south": ["s"],
+				"east": ["e"],
+				"west": ["w"],
+				"north": ["n"],
+				"southwest": ["sw"],
+				"southeast": ["se"],
+				"northwest": ["nw"],
+				"northeast": ["ne"]
+			}
+		},
+		"actions": {
+			"descend": {
+				"pattern": "^(descend|go down|climb down|scale|walk down)",
+				"objects": ["staircase", "stairs"]
+			},
+			"open": {
+				"pattern": "^(open|unlock)",
+				"objects": ["trunk", "chest", "mailbox"]
+			},
+			"take": {
+				"pattern": "^(take|get|grab|pick up)",
+				"objects": ["mailbox", "boards", "skeleton", "leaflet", "bell", "book", "matches", "matchbook", "wrench", "screwdriver", "bar", "platinum", "figurine", "jade"]
+			},
+			"read": {
+				"pattern": "^(read|look at|examine)",
+				"objects": ["leaflet", "book", "inscription"]
+			},
+			"drop": {
+				"pattern": "^(drop|put down|release)",
+				"objects": ["leaflet", "bell", "book"]
+			},
+			"light": {
+				"pattern": "^(light|illuminate|brighten)",
+				"objects": ["room"]
+			},
+			"smash": {
+				"pattern": "^(smash|break|destroy)",
+				"objects": ["skeleton"]
+			},
+			"look": {
+				"pattern": "^(look|examine|inspect)",
+				"objects": ["house", "mailbox", "mirror", "altar", "buttons"]
+			},
+			"ring": {
+				"pattern": "^(ring|sound|shake)",
+				"objects": ["bell"]
+			},
+			"pray": {
+				"pattern": "^(pray|kneel|worship)",
+				"objects": []
+			},
+			"push": {
+				"pattern": "^(push|press|activate)",
+				"objects": ["button", "yellow button", "red button", "blue button", "brown button"]
+			},
+			"turn": {
+				"pattern": "^(turn|twist|rotate)",
+				"objects": ["bolt", "valve"]
+			},
+			"rub": {
+				"pattern": "^(rub|touch|feel)",
+				"objects": ["mirror"]
+			},
+			"dig": {
+				"pattern": "^(dig|excavate|uncover)",
+				"objects": ["sand", "ground"]
+			},
+			"climb": {
+				"pattern": "^(climb|ascend|scale up)",
+				"objects": ["tree", "ladder"]
+			},
+			"echo": {
+				"pattern": "^(echo|shout|yell)",
+				"objects": []
+			},
+			"ulysses": {
+				"pattern": "^(ulysses|odysseus)",
+				"objects": []
+			}
+		}
+	},
+	"chapterRequirements": {
+		"I": {
+			"type": "navigation",
+			"direction": "south"
+		},
+		"II": {
+			"type": "navigation",
+			"direction": "east"
+		},
+		"III": {
+			"type": "action",
+			"action": "descend",
+			"object": "staircase"
+		},
+		"IV": {
+			"type": "action",
+			"action": "descend",
+			"object": "staircase"
+		},
+		"V": {
+			"type": "action",
+			"action": "open",
+			"object": "trunk"
+		},
+		"VI": {
+			"type": "action",
+			"action": "take",
+			"object": "bell"
+		},
+		"VII": {
+			"type": "action",
+			"action": "pray",
+			"object": ""
+		},
+		"VIII": {
+			"type": "action",
+			"action": "take",
+			"object": "matches"
+		},
+		"IX": {
+			"type": "navigation",
+			"direction": "northeast"
+		},
+		"X": {
+			"type": "action",
+			"action": "push",
+			"object": "yellow button"
+		},
+		"XI": {
+			"type": "action",
+			"action": "echo",
+			"object": ""
+		},
+		"XII": {
+			"type": "action",
+			"action": "ring",
+			"object": "bell"
+		},
+		"XIII": {
+			"type": "action",
+			"action": "rub",
+			"object": "mirror"
+		},
+		"XIV": {
+			"type": "action",
+			"action": "take",
+			"object": "jade"
+		},
+		"XV": {
+			"type": "action",
+			"action": "dig",
+			"object": "sand"
+		}
 	},
 	"interactions": {
 		"I": {
@@ -36,17 +200,69 @@
 			"go south": "⛈️ Storm-tossed trees block your way."
 		},
 		"III": {
-			"light up room": "💡 You would need a torch or lamp to do that.",
+			"light room": "💡 You would need a torch or lamp to do that.",
 			"go south": "👹 You see a large ogre and turn around."
 		},
 		"IV": {
 			"take skeleton": "😐 Why would you do that? Are you some sort of sicko?",
 			"smash skeleton": "😐 Sick person. Have some respect mate.",
-			"light up room": "💡 You would need a torch or lamp to do that.",
+			"light room": "💡 You would need a torch or lamp to do that.",
 			"break skeleton": "⁉️ I have two questions: Why and With What?"
 		},
 		"V": {
 			"open trunk": "🏆🏆🏆"
+		},
+		"VI": {
+			"read inscription": "The inscription is in an ancient language. You can make out the word 'PRAY'. 🙏",
+			"go east": "You find a small Egyptian room with hieroglyphics. There's nothing of value here.",
+			"take bell": "You take the brass bell. It feels heavy and ancient. 🔔"
+		},
+		"VII": {
+			"read book": "📖 The book contains ancient prayers and incantations. You feel a mystical presence.",
+			"pray": "✨ A bright light fills the room! You are transported to a forest clearing.",
+			"take book": "The book is too heavy and seems bound to the altar by some mystical force. 🚫"
+		},
+		"VIII": {
+			"take matches": "You take the matchbook. It reads 'Visit Beautiful FCD#3'. 🔥",
+			"go north": "You enter a maintenance room with colorful buttons.",
+			"go east": "You see various maintenance equipment scattered about."
+		},
+		"IX": {
+			"go southwest": "The path is too narrow and dangerous. ⚠️",
+			"go northeast": "You carefully navigate the chasm edge heading northeast. 🌉",
+			"look down": "You see a deep chasm with water flowing far below. 🌊"
+		},
+		"X": {
+			"push yellow button": "Click! ✅ You hear machinery whirring to life somewhere.",
+			"push red button": "⚠️ Warning lights flash! You quickly back away.",
+			"push blue button": "Nothing happens. The button seems inactive. 💤",
+			"take wrench": "You take the heavy wrench. 🔧",
+			"take screwdriver": "You take the screwdriver. 🪛"
+		},
+		"XI": {
+			"echo": "🔊 You shout 'ECHO!' The acoustics change subtly. The deafening noise becomes bearable!",
+			"take bar": "You carefully pick up the valuable platinum bar. ✨",
+			"go up": "You climb up the stone stairway. 🪜"
+		},
+		"XII": {
+			"ring bell": "🔔 The bell becomes red hot and falls! The spirits freeze in terror as an ancient power manifests.",
+			"go south": "👻 The evil spirits block your way, jeering and cackling.",
+			"read book": "📖 Each word reverberates powerfully. A voice commands 'Begone, fiends!' The spirits flee!"
+		},
+		"XIII": {
+			"rub mirror": "🪞 As you touch the mirror, it ripples like water! There's a deep rumbling from within the earth.",
+			"look mirror": "You see your reflection, but something seems... different about it. 👤",
+			"break mirror": "That would bring seven years of bad luck! You reconsider. 🚫"
+		},
+		"XIV": {
+			"take jade": "🗿 You carefully pick up the exquisite jade figurine. It's remarkably detailed!",
+			"look bat": "🦇 The vampire bat hangs upside down, holding its nose. It seems repelled by something...",
+			"take bat": "The bat flaps away angrily! 🦇💨"
+		},
+		"XV": {
+			"dig sand": "⛏️ You dig into the sand... You found a beautiful scarab! 💎",
+			"take sand": "The sand slips through your fingers. ⏳",
+			"look sand": "The sand appears recently disturbed, as if something was buried here. 🔍"
 		}
 	},
 	"info": "/**\n ZORK I: The Great Underground Empire\n Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\n ZORK is a registered trademark of Infocom, Inc.\n Revision 88 / Serial number 840726\n Source at: https://web.mit.edu/marleigh/www/portfolio/Files/zork/transcript.html\n/"

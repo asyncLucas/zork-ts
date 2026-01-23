@@ -16,7 +16,11 @@ class ConfigurationService {
 	}
 
 	public get userMaximumAttempts(): number {
-		return parseInt(process.env.USER_MAXIMUM_ATTEMPTS ?? '5') ?? 5;
+		return Number.parseInt(process.env.USER_MAXIMUM_ATTEMPTS ?? '5') ?? 5;
+	}
+
+	public get answerSimilarityThreshold(): number {
+		return Number.parseFloat(process.env.ANSWER_SIMILARITY_THRESHOLD ?? '0.75') ?? 0.75;
 	}
 }
 

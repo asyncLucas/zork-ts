@@ -19,6 +19,7 @@ import { ZorkContext } from './models/ZorkContext';
 import { TranslationData } from './models/TranslationData';
 import similarityService from './services/similarity.service';
 import configurationService from './services/configuration.service';
+import commandParserService from './services/command-parser.service';
 
 class Main {
 	private userAttempts: number;
@@ -144,7 +145,7 @@ class Main {
 	}
 
 	private *chaptersGenerator(): Generator<Part, void, undefined> {
-		yield* [Part.I, Part.II, Part.III, Part.IV, Part.V];
+		yield* [Part.I, Part.II, Part.III, Part.IV, Part.V, Part.VI, Part.VII, Part.VIII, Part.IX, Part.X, Part.XI, Part.XII, Part.XIII, Part.XIV, Part.XV];
 	}
 
 	private usefulCommands(): void {
@@ -198,36 +199,54 @@ class Main {
 			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
 
+			// Check if user's answer is correct using new command parser
+			const answerResult = commandParserService.isCorrectAnswer(
+				answer,
+				ctx.session.currentChapter,
+				ctx.session.translation
+			);
+
+			if (answerResult.matched) {
+				this.resetUserAttempts();
+				this.nextChapter(ctx);
+				return;
+			}
+
+			// Check for specific interactions
 			const correctInteration =
 				ctx.session?.translation?.interactions[ctx.session?.currentChapter][answer];
 
-			if (this.correctAnswer(ctx, answer)) {
-				this.resetUserAttempts();
-				this.nextChapter(ctx);
-			} else if (correctInteration) {
+			if (correctInteration) {
 				ctx.reply(correctInteration);
 			} else if (this.maximumAttemptsReachedByTheUser) {
 				this.gameCompleted(ctx, ctx.session.translation.message['Game Over']);
 			} else {
-				this.incorrectAnswer(ctx, answer);
+				this.incorrectAnswer(ctx, answer, answerResult.confidence);
 			}
 		});
 	}
 
-	private incorrectAnswer(ctx: ZorkContext, incorrectAnswer: string): void {
+	private incorrectAnswer(ctx: ZorkContext, incorrectAnswer: string, confidence?: number): void {
 		this.increaseUserAttempts();
 
-		const [correctAnswer] =
-			ctx.session.translation.availableAnswers[ctx.session.currentChapter];
-
-		const percent = (
-			similarityService.calculate(correctAnswer, incorrectAnswer) * 100
-		).toFixed(2);
+		// Use provided confidence or calculate it
+		let percent: string;
+		if (confidence === undefined) {
+			const canonicalAnswer = commandParserService.getCanonicalAnswer(
+				ctx.session.currentChapter,
+				ctx.session.translation
+			);
+			percent = (
+				similarityService.calculate(canonicalAnswer, incorrectAnswer) * 100
+			).toFixed(2);
+		} else {
+			percent = (confidence * 100).toFixed(2);
+		}
 
 		ctx.reply(
 			ctx.session.translation.message['Try again']
 				.replace('#percent', percent)
-				.replace('#attempts', this.remainingUserAttempts)
+				.replace('#attempts', this.remainingUserAttempts.toString())
 		);
 	}
 
@@ -244,10 +263,16 @@ class Main {
 		this.bot.launch();
 	}
 
+	// @deprecated -- to be removed in future versions
 	private correctAnswer(ctx: ZorkContext, answer: string): boolean {
-		return ctx.session.translation.availableAnswers[ctx.session.currentChapter].includes(
-			answer
+		// This method is deprecated in favor of commandParserService.isCorrectAnswer
+		// Kept for backward compatibility
+		const result = commandParserService.isCorrectAnswer(
+			answer,
+			ctx.session.currentChapter,
+			ctx.session.translation
 		);
+		return result.matched;
 	}
 
 	private sendErrorMessage(error: any): void {
