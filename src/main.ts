@@ -214,7 +214,7 @@ class Main {
 
 			// Check for specific interactions
 			const correctInteration =
-				ctx.session?.translation?.interactions[ctx.session?.currentChapter][answer];
+				ctx.session?.translation?.interactions?.[ctx.session?.currentChapter]?.[answer];
 
 			if (correctInteration) {
 				ctx.reply(correctInteration);
