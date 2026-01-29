@@ -1,16 +1,26 @@
 {
 	"compilerOptions": {
+		"target": "ES2021",
 		"module": "commonjs",
+		"lib": ["ES2021"],
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"strict": false,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
 		"esModuleInterop": true,
-		"target": "es2021",
-		"strict": true,
-		"sourceMap": true,
-		"lib": ["es2021"],
 		"skipLibCheck": true,
-		"rootDir": "src",
-		"outDir": "dist",
+		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
 		"moduleResolution": "node",
-		"strictPropertyInitialization": false
-	}
+		"allowUnusedLabels": false,
+		"allowUnreachableCode": false,
+		"exactOptionalPropertyTypes": false
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

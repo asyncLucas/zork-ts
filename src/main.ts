@@ -10,24 +10,35 @@
 
 import 'dotenv/config';
 import fs from 'node:fs';
+import { Logger, ILogObj } from 'tslog';
+import type { Message } from 'telegraf/types';
 import LocalSession from 'telegraf-session-local';
 import { Telegraf, Telegram, Markup } from 'telegraf';
-import type { Message } from 'telegraf/types';
 
 import { Part } from './models/Part';
 import { ZorkContext } from './models/ZorkContext';
 import { TranslationData } from './models/TranslationData';
 import similarityService from './services/similarity.service';
 import configurationService from './services/configuration.service';
+import CommandParserService from './services/command-parser.service';
 
 class Main {
 	private userAttempts: number;
 	private telegram: Telegram;
 	private bot: Telegraf<ZorkContext>;
+	private readonly logger: Logger<ILogObj>;;
+	private readonly commandParserService: CommandParserService;
+
+	constructor() {
+		this.logger = new Logger({ name: "main", type: "pretty" });
+		this.commandParserService = new CommandParserService(new Logger({ name: "command-parser", type: "pretty" }));
+	}
 
 	private iterator = this.chaptersGenerator();
 
-	public initialize(): void {
+	static readonly run = () => new Main().initialize();
+
+	private initialize(): void {
 		try {
 			this.createInstances();
 			this.initializeSession();
@@ -71,9 +82,12 @@ class Main {
 	private async startBot(): Promise<void> {
 		this.bot.start(async ctx => {
 			try {
+				this.logger.info(`New user started the bot: ${ctx.from?.username} '${ctx.from?.id}'`);
+				this.resetState(ctx);
 				this.mission(ctx);
 				await this.languageSelection(ctx);
 			} catch (error) {
+				this.logger.error(`Error in /start command for user: ${ctx.from?.username} '${ctx.from?.id}'`, error);
 				this.sendErrorMessage(error);
 			}
 		});
@@ -101,10 +115,15 @@ class Main {
 	}
 
 	private changeLanguage(ctx: ZorkContext, language: string): void {
-		const translation = this.getTranslation(language);
-		const currentChapter = ctx?.session?.currentChapter ?? this.iterator.next().value;
-		ctx.session = { answer: '', currentChapter, translation, language };
+		ctx.session = {
+			answer: '',
+			language,
+			currentChapter: ctx?.session?.currentChapter ?? this.iterator.next().value,
+			translation: this.getTranslation(language),
+			items: ctx?.session?.items ?? []
+		};
 		this.currentChapter(ctx);
+		this.logger.info(`User changed language to '${language}': ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
 
 	private getTranslation(language: string): TranslationData {
@@ -121,15 +140,25 @@ class Main {
 		if (!done) {
 			ctx.session.currentChapter = currentPart;
 			this.currentChapter(ctx);
+			this.logger.info(`User advanced to chapter '${currentPart}': ${ctx.from?.username} '${ctx.from?.id}'`);
 			return;
 		}
 
-		this.gameCompleted(ctx, ctx.session.translation.message['Game Completed']);
+		this.logger.info(`User completed the game: ${ctx.from?.username} '${ctx.from?.id}'`);
+		this.gameCompleted(ctx, ctx.session?.translation?.message?.['Game Completed']);
 	}
 
 	private currentChapter(ctx: ZorkContext): void {
-		ctx.reply(ctx.session.translation.message[ctx.session.currentChapter]);
-		setTimeout(() => ctx.reply(ctx.session.translation.message['What do you do? ']), 500);
+		const message = ctx.session?.translation?.message?.[ctx.session?.currentChapter];
+		if (!message) {
+			this.logger.error(`Translation missing for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}'`);
+			ctx.reply('⚠️ Oops! Something went wrong. Please try again later.');
+			return;
+		}
+
+		this.logger.info(`User is at chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}'`);
+		ctx.reply(message);
+		setTimeout(() => ctx.reply(ctx.session?.translation?.message?.['What do you do? '] || ''), 500);
 	}
 
 	private gameCompleted(ctx: ZorkContext, message: string): void {
@@ -141,10 +170,11 @@ class Main {
 				.oneTime()
 				.resize()
 		);
+		this.logger.info(`User reached game completed state: ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
 
-	private *chaptersGenerator(): Generator<Part, void, undefined> {
-		yield* [Part.I, Part.II, Part.III, Part.IV, Part.V];
+	private *chaptersGenerator(): Generator<Part, Part, undefined> {
+		return yield* [Part.I, Part.II, Part.III, Part.IV, Part.V, Part.VI, Part.VII, Part.VIII, Part.IX, Part.X, Part.XI, Part.XII, Part.XIII, Part.XIV, Part.XV];
 	}
 
 	private usefulCommands(): void {
@@ -153,14 +183,17 @@ class Main {
 			ctx.reply('⌛ Send /restart to restart the game');
 			ctx.reply('🌐 Send /language select a new idiom');
 			ctx.reply('📖 Send /chapter to get the current chapter description');
+			ctx.reply('🎒 Send /items to check your collected items');
 			ctx.reply('ℹ️ Send /info to get info about the game');
 		});
 
-		this.bot.command('restart', ctx => this.validateSession(ctx, this.restart));
+		this.bot.command('restart', ctx => this.validateSession(ctx, this.restart.bind(this)));
 
 		this.bot.command('language', ctx => this.languageSelection(ctx));
 
-		this.bot.command('chapter', ctx => this.validateSession(ctx, this.currentChapter));
+		this.bot.command('chapter', ctx => this.validateSession(ctx, this.currentChapter.bind(this)));
+
+		this.bot.command('items', ctx => this.validateSession(ctx, this.showItems.bind(this)));
 
 		this.bot.command('info', ctx => {
 			ctx.reply(`Hi 👋, ${ctx.from.first_name}! Here are some important infos.`, {
@@ -175,22 +208,54 @@ class Main {
 
 	private validateSession(ctx: ZorkContext, callback: Function): void {
 		if (ctx.session?.translation) {
-			callback(ctx);
+			callback.call(this, ctx);
 		} else {
 			ctx.reply('You must select a /language first! Please, check your menu options.');
 		}
 	}
 
 	private restart(ctx: ZorkContext): void {
-		this.resetState(ctx);
-		this.mission(ctx);
-		this.currentChapter(ctx);
+		try {
+			this.resetState(ctx);
+			this.mission(ctx);
+			this.currentChapter(ctx);
+			this.logger.info(`User restarted the game: ${ctx.from?.username} '${ctx.from?.id}'`);
+		} catch (error) {
+			this.logger.error('Error while restarting the game', error);
+			this.sendErrorMessage(error);
+		}
 	}
 
 	private resetState(ctx: ZorkContext): void {
 		this.iterator = this.chaptersGenerator();
-		ctx.session.currentChapter = this.iterator.next().value as Part;
+		ctx.session.currentChapter = this.iterator.next().value;
+		ctx.session.items = [];
 		this.resetUserAttempts();
+	}
+
+	private showItems(ctx: ZorkContext): void {
+		const items = ctx.session.items || [];
+		const translation = ctx.session.translation;
+
+		if (items.length === 0) {
+			ctx.reply(translation.message['No Items'] || '🎒 Your inventory is empty.');
+		} else {
+			const itemList = items.map((item: string, index: number) => `${index + 1}. ${item}`).join('\n');
+			ctx.reply(`${translation.message['Items List'] || '🎒 Your inventory:'}\n\n${itemList}`);
+		}
+
+		this.logger.info(`User checked items: ${ctx.from?.username} '${ctx.from?.id}' - Items: ${items.length}`);
+	}
+
+	private addItemToInventory(ctx: ZorkContext, item: string): void {
+		if (!ctx.session.items) {
+			ctx.session.items = [];
+		}
+
+		if (!ctx.session.items.includes(item)) {
+			ctx.session.items.push(item);
+			this.logger.info(`Item added to inventory: ${ctx.from?.username} '${ctx.from?.id}' - Item: '${item}'`);
+		}
 	}
 
 	private userInput(): void {
@@ -198,36 +263,65 @@ class Main {
 			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
 
-			const correctInteration =
-				ctx.session?.translation?.interactions[ctx.session?.currentChapter][answer];
+			const parsedCommand = this.commandParserService.parse(answer, ctx.session.translation);
+			if (parsedCommand.action === 'take' && parsedCommand.object) {
+				this.addItemToInventory(ctx, parsedCommand.object);
+				ctx.reply(ctx.session.translation.message['TAKEN']?.replace('#item', parsedCommand.object) || `✅ Taken: ${parsedCommand.object}`);
+			}
 
-			if (this.correctAnswer(ctx, answer)) {
+			const answerResult = this.commandParserService.isCorrectAnswer(
+				answer,
+				ctx.session.currentChapter,
+				ctx.session.translation
+			);
+
+			const correctInteration =
+				ctx.session?.translation?.interactions?.[ctx.session?.currentChapter]?.[answer];
+
+			if (correctInteration) {
+				ctx.reply(correctInteration);
+				this.logger.info(`User provided correct interaction for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${answer}'`);
+				return;
+			}
+
+			if (answerResult.matched) {
 				this.resetUserAttempts();
 				this.nextChapter(ctx);
-			} else if (correctInteration) {
-				ctx.reply(correctInteration);
-			} else if (this.maximumAttemptsReachedByTheUser) {
-				this.gameCompleted(ctx, ctx.session.translation.message['Game Over']);
-			} else {
-				this.incorrectAnswer(ctx, answer);
+				this.logger.info(`User provided correct answer for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${answer}'`);
+				return;
 			}
+
+			if (this.maximumAttemptsReachedByTheUser) {
+				this.gameCompleted(ctx, ctx.session.translation.message['Game Over']);
+				this.logger.info(`User reached maximum attempts and game over: ${ctx.from?.username} '${ctx.from?.id}'`);
+				return;
+			}
+
+			this.incorrectAnswer(ctx, answer, answerResult.confidence);
 		});
 	}
 
-	private incorrectAnswer(ctx: ZorkContext, incorrectAnswer: string): void {
+	private incorrectAnswer(ctx: ZorkContext, incorrectAnswer: string, confidence?: number): void {
+		this.logger.info(`Incorrect answer by user: ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${incorrectAnswer}'`);
 		this.increaseUserAttempts();
 
-		const [correctAnswer] =
-			ctx.session.translation.availableAnswers[ctx.session.currentChapter];
-
-		const percent = (
-			similarityService.calculate(correctAnswer, incorrectAnswer) * 100
-		).toFixed(2);
+		let percent: string;
+		if (confidence === undefined) {
+			const canonicalAnswer = this.commandParserService.getCanonicalAnswer(
+				ctx.session.currentChapter,
+				ctx.session.translation
+			);
+			percent = (
+				similarityService.calculate(canonicalAnswer, incorrectAnswer) * 100
+			).toFixed(2);
+		} else {
+			percent = (confidence * 100).toFixed(2);
+		}
 
 		ctx.reply(
 			ctx.session.translation.message['Try again']
 				.replace('#percent', percent)
-				.replace('#attempts', this.remainingUserAttempts)
+				.replace('#attempts', this.remainingUserAttempts.toString())
 		);
 	}
 
@@ -244,15 +338,8 @@ class Main {
 		this.bot.launch();
 	}
 
-	private correctAnswer(ctx: ZorkContext, answer: string): boolean {
-		return ctx.session.translation.availableAnswers[ctx.session.currentChapter].includes(
-			answer
-		);
-	}
-
 	private sendErrorMessage(error: any): void {
-		console.log(error);
-
+		this.logger.error('An unexpected error occurred:', error);
 		if (configurationService.chatId) {
 			this.telegram.sendMessage(
 				configurationService.chatId,
@@ -262,9 +349,17 @@ class Main {
 	}
 
 	private listeners(): void {
-		process.once('SIGINT', () => this.bot.stop('SIGINT'));
-		process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
+		process.once('SIGINT', () => this.shutdown());
+		process.once('SIGTERM', () => this.shutdown());
+	}
+
+	private async shutdown(): Promise<void> {
+		this.logger.info('\n⏸️  Shutting down gracefully...');
+		this.bot.stop('SIGINT');
+		this.bot.stop('SIGTERM');
+		this.logger.info('✅ Bot stopped.');
+		process.exit(0);
 	}
 }
 
-new Main().initialize();
+Main.run();

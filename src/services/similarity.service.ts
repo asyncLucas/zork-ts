@@ -7,56 +7,56 @@
  */
 
 class SimilarityService {
-	public calculate(s1 = '', s2 = ''): number {
-		let longer = s1;
-		let shorter = s2;
+	public calculate(sequence1 = '', sequence2 = ''): number {
+		let longer: string;
+		let shorter: string;
 
-		if (s1.length < s2.length) {
-			longer = s2;
-			shorter = s1;
+		if (sequence1.length < sequence2.length) {
+			longer = sequence2;
+			shorter = sequence1;
+		} else {
+			longer = sequence1;
+			shorter = sequence2;
 		}
 
 		const longerLength = longer.length;
-
-		if (longerLength == 0) {
-			return 1.0;
+		if (longerLength === 0) {
+			return 1;
 		}
 
-		return (longerLength - this.editDistance(longer, shorter)) / longerLength;
+		return (longerLength - this.calculateLevenshteinDistance(longer, shorter)) / longerLength;
 	}
 
-	private editDistance(s1: string, s2: string): number {
-		s1 = s1.toLowerCase();
-		s2 = s2.toLowerCase();
+	private calculateLevenshteinDistance(sequence1: string, sequence2: string): number {
+		sequence1 = sequence1.toLowerCase();
+		sequence2 = sequence2.toLowerCase();
 
-		let costs = new Array();
+		let costs: number[] = new Array();
 
-		for (let i = 0; i <= s1.length; i++) {
+		for (let i = 0; i <= sequence1.length; i++) {
 			let lastValue = i;
 
-			for (let j = 0; j <= s2.length; j++) {
-				if (i == 0) {
+			for (let j = 0; j <= sequence2.length; j++) {
+				if (i === 0) {
 					costs[j] = j;
-				} else {
-					if (j > 0) {
-						let newValue = costs[j - 1];
+				} else if (j > 0) {
+					let newValue = costs[j - 1];
 
-						if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
-							newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-						}
-
-						costs[j - 1] = lastValue;
-						lastValue = newValue;
+					if (sequence1.charAt(i - 1) !== sequence2.charAt(j - 1)) {
+						newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
 					}
+
+					costs[j - 1] = lastValue;
+					lastValue = newValue;
 				}
 			}
 
 			if (i > 0) {
-				costs[s2.length] = lastValue;
+				costs[sequence2.length] = lastValue;
 			}
 		}
 
-		return costs[s2.length];
+		return costs[sequence2.length];
 	}
 }
 
