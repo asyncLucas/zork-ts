@@ -220,7 +220,7 @@ class Main {
 			this.currentChapter(ctx);
 			this.logger.info(`User restarted the game: ${ctx.from?.username} '${ctx.from?.id}'`);
 		} catch (error) {
-			this.startBot();
+			this.logger.error('Error while restarting the game', error);
 			this.sendErrorMessage(error);
 		}
 	}
