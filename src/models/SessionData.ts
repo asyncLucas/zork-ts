@@ -6,4 +6,5 @@ export interface SessionData {
 	language: string;
 	currentChapter: Part;
 	translation: TranslationData;
+	items: string[];
 }

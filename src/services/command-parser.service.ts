@@ -6,9 +6,11 @@
  * and identifies intent (action, direction, object)
  */
 
+import { ILogObj, Logger } from 'tslog';
+
 import { Part } from '../models/Part';
-import { TranslationData } from '../models/TranslationData';
 import similarityService from './similarity.service';
+import { TranslationData } from '../models/TranslationData';
 
 export interface ParsedCommand {
   action?: string;
@@ -25,6 +27,7 @@ export interface CommandMatch {
 
 class CommandParserService {
   private readonly SIMILARITY_THRESHOLD = 0.85;
+  private readonly logger: Logger<ILogObj> = new Logger();
 
   /**
    * Parse user input into structured command
@@ -48,13 +51,11 @@ class CommandParserService {
       }
     }
 
-    // Try to match action commands
     if (commands?.actions) {
       for (const [actionName, actionConfig] of Object.entries(commands.actions)) {
         const regex = new RegExp(actionConfig.pattern, 'i');
         const match = regex.exec(normalized);
         if (match) {
-          // Extract potential object from remaining text
           const object = this.extractObject(normalized, actionConfig.objects || []);
           return {
             action: actionName,
@@ -80,14 +81,13 @@ class CommandParserService {
     const requirement = translation.chapterRequirements?.[currentChapter];
 
     if (!requirement) {
-      // Fallback to old system if no requirements defined
+      this.logger.debug(`No chapter requirement found for chapter ${currentChapter}, falling back to legacy answer check.`);
       return this.checkLegacyAnswer(normalizedAnswer, currentChapter, translation);
     }
 
     const parsedCommand = this.parse(userAnswer, translation);
-
-    // Check exact match with requirement
     if (this.matchesRequirement(parsedCommand, requirement)) {
+      this.logger.debug(`User answer matches chapter ${currentChapter} requirement exactly.`);
       return {
         matched: true,
         confidence: 1,
@@ -95,13 +95,13 @@ class CommandParserService {
       };
     }
 
-    // Try pattern matching with variations
     const patternMatch = this.tryPatternMatch(normalizedAnswer, requirement, translation);
     if (patternMatch.matched) {
+      this.logger.debug(`User answer matches chapter ${currentChapter} requirement by pattern.`);
       return patternMatch;
     }
 
-    // Fallback to similarity matching
+    this.logger.debug(`User answer does not match chapter ${currentChapter} requirement exactly or by pattern, trying similarity match.`);
     return this.trySimilarityMatch(normalizedAnswer, currentChapter, translation);
   }
 
@@ -112,7 +112,7 @@ class CommandParserService {
     const requirement = translation.chapterRequirements?.[currentChapter];
 
     if (!requirement) {
-      // Fallback to first available answer
+      this.logger.debug(`No chapter requirement found for chapter ${currentChapter}, falling back to legacy answer check.`);
       const answers = translation.availableAnswers?.[currentChapter];
       return Array.isArray(answers) ? answers[0] : answers || '';
     }
@@ -141,6 +141,7 @@ class CommandParserService {
 
     for (const [canonical, variations] of Object.entries(synonyms)) {
       if (variations.includes(direction) || canonical === direction) {
+        this.logger.debug(`Resolved direction '${direction}' to canonical '${canonical}'`);
         return canonical;
       }
     }
@@ -151,6 +152,7 @@ class CommandParserService {
   private extractObject(text: string, validObjects: string[]): string | undefined {
     for (const obj of validObjects) {
       if (text.includes(obj.toLowerCase())) {
+        this.logger.debug(`Extracted object '${obj}' from text.`);
         return obj;
       }
     }
@@ -173,7 +175,6 @@ class CommandParserService {
     requirement: any,
     translation: TranslationData
   ): CommandMatch {
-    // Build pattern variations from requirement
     const patterns: string[] = [];
 
     if (requirement.type === 'navigation') {
@@ -188,6 +189,7 @@ class CommandParserService {
 
     for (const pattern of patterns) {
       if (new RegExp(pattern, 'i').test(answer)) {
+        this.logger.debug(`User answer matches pattern '${pattern}'.`);
         return {
           matched: true,
           confidence: 0.9,
@@ -196,6 +198,7 @@ class CommandParserService {
       }
     }
 
+    this.logger.debug(`No patterns matched for the user's answer.`);
     return { matched: false, confidence: 0, method: 'pattern' };
   }
 
@@ -207,6 +210,7 @@ class CommandParserService {
     const canonicalAnswer = this.getCanonicalAnswer(currentChapter, translation);
     const similarity = similarityService.calculate(canonicalAnswer, answer);
 
+    this.logger.debug(`Similarity between user answer and canonical answer for chapter ${currentChapter}: ${similarity}`);
     return {
       matched: similarity >= this.SIMILARITY_THRESHOLD,
       confidence: similarity,
@@ -222,18 +226,19 @@ class CommandParserService {
     const availableAnswers = translation.availableAnswers?.[currentChapter];
 
     if (!availableAnswers) {
+      this.logger.debug(`No available answers found for chapter ${currentChapter}.`);
       return { matched: false, confidence: 0, method: 'exact' };
     }
 
     const answers = Array.isArray(availableAnswers) ? availableAnswers : [availableAnswers];
-
-    // Check exact match
     if (answers.includes(answer)) {
+      this.logger.debug(`User answer matches legacy answer for chapter ${currentChapter} exactly.`);
       return { matched: true, confidence: 1, method: 'exact' };
     }
 
     // Check similarity with first answer
     const similarity = similarityService.calculate(answers[0], answer);
+    this.logger.debug(`Legacy answer similarity for chapter ${currentChapter}: ${similarity}`);
     return {
       matched: similarity >= this.SIMILARITY_THRESHOLD,
       confidence: similarity,

@@ -109,9 +109,13 @@ class Main {
 	}
 
 	private changeLanguage(ctx: ZorkContext, language: string): void {
-		const translation = this.getTranslation(language);
-		const currentChapter = ctx?.session?.currentChapter ?? this.iterator.next().value;
-		ctx.session = { answer: '', currentChapter, translation, language };
+		ctx.session = {
+			answer: '',
+			language,
+			currentChapter: ctx?.session?.currentChapter ?? this.iterator.next().value,
+			translation: this.getTranslation(language),
+			items: ctx?.session?.items ?? []
+		};
 		this.currentChapter(ctx);
 		this.logger.info(`User changed language to '${language}': ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
@@ -175,6 +179,8 @@ class Main {
 
 		this.bot.command('chapter', ctx => this.validateSession(ctx, this.currentChapter));
 
+		this.bot.command('items', ctx => this.validateSession(ctx, this.showItems.bind(this)));
+
 		this.bot.command('info', ctx => {
 			ctx.reply(`Hi 👋, ${ctx.from.first_name}! Here are some important infos.`, {
 				reply_markup: {
@@ -209,13 +215,45 @@ class Main {
 	private resetState(ctx: ZorkContext): void {
 		this.iterator = this.chaptersGenerator();
 		ctx.session.currentChapter = this.iterator.next().value as Part;
+		ctx.session.items = [];
 		this.resetUserAttempts();
+	}
+
+	private showItems(ctx: ZorkContext): void {
+		const items = ctx.session.items || [];
+		const translation = ctx.session.translation;
+
+		if (items.length === 0) {
+			ctx.reply(translation.message['No Items'] || '🎒 Your inventory is empty.');
+		} else {
+			const itemList = items.map((item, index) => `${index + 1}. ${item}`).join('\n');
+			ctx.reply(`${translation.message['Items List'] || '🎒 Your inventory:'}\n\n${itemList}`);
+		}
+
+		this.logger.info(`User checked items: ${ctx.from?.username} '${ctx.from?.id}' - Items: ${items.length}`);
+	}
+
+	private addItemToInventory(ctx: ZorkContext, item: string): void {
+		if (!ctx.session.items) {
+			ctx.session.items = [];
+		}
+
+		if (!ctx.session.items.includes(item)) {
+			ctx.session.items.push(item);
+			this.logger.info(`Item added to inventory: ${ctx.from?.username} '${ctx.from?.id}' - Item: '${item}'`);
+		}
 	}
 
 	private userInput(): void {
 		this.bot.on('message', ctx => {
 			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
+
+			const parsedCommand = commandParserService.parse(answer, ctx.session.translation);
+			if (parsedCommand.action === 'take' && parsedCommand.object) {
+				this.addItemToInventory(ctx, parsedCommand.object);
+				ctx.reply(ctx.session.translation.message['TAKEN']?.replace('#item', parsedCommand.object) || `✅ Taken: ${parsedCommand.object}`);
+			}
 
 			const answerResult = commandParserService.isCorrectAnswer(
 				answer,
