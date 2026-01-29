@@ -10,7 +10,7 @@
 
 import 'dotenv/config';
 import fs from 'node:fs';
-import { Logger } from "tslog";
+import { Logger, ILogObj } from 'tslog';
 import type { Message } from 'telegraf/types';
 import LocalSession from 'telegraf-session-local';
 import { Telegraf, Telegram, Markup } from 'telegraf';
@@ -20,14 +20,19 @@ import { ZorkContext } from './models/ZorkContext';
 import { TranslationData } from './models/TranslationData';
 import similarityService from './services/similarity.service';
 import configurationService from './services/configuration.service';
-import commandParserService from './services/command-parser.service';
+import CommandParserService from './services/command-parser.service';
 
 class Main {
 	private userAttempts: number;
 	private telegram: Telegram;
 	private bot: Telegraf<ZorkContext>;
-	private readonly logger = new Logger({ name: "main", type: "pretty" });
+	private readonly logger: Logger<ILogObj>;;
+	private readonly commandParserService: CommandParserService;
 
+	constructor() {
+		this.logger = new Logger({ name: "main", type: "pretty" });
+		this.commandParserService = new CommandParserService(new Logger({ name: "command-parser", type: "pretty" }));
+	}
 
 	private iterator = this.chaptersGenerator();
 
@@ -181,11 +186,11 @@ class Main {
 			ctx.reply('ℹ️ Send /info to get info about the game');
 		});
 
-		this.bot.command('restart', ctx => this.validateSession(ctx, this.restart));
+		this.bot.command('restart', ctx => this.validateSession(ctx, this.restart.bind(this)));
 
 		this.bot.command('language', ctx => this.languageSelection(ctx));
 
-		this.bot.command('chapter', ctx => this.validateSession(ctx, this.currentChapter));
+		this.bot.command('chapter', ctx => this.validateSession(ctx, this.currentChapter.bind(this)));
 
 		this.bot.command('items', ctx => this.validateSession(ctx, this.showItems.bind(this)));
 
@@ -202,7 +207,7 @@ class Main {
 
 	private validateSession(ctx: ZorkContext, callback: Function): void {
 		if (ctx.session?.translation) {
-			callback(ctx);
+			callback.call(this, ctx);
 		} else {
 			ctx.reply('You must select a /language first! Please, check your menu options.');
 		}
@@ -257,13 +262,13 @@ class Main {
 			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
 
-			const parsedCommand = commandParserService.parse(answer, ctx.session.translation);
+			const parsedCommand = this.commandParserService.parse(answer, ctx.session.translation);
 			if (parsedCommand.action === 'take' && parsedCommand.object) {
 				this.addItemToInventory(ctx, parsedCommand.object);
 				ctx.reply(ctx.session.translation.message['TAKEN']?.replace('#item', parsedCommand.object) || `✅ Taken: ${parsedCommand.object}`);
 			}
 
-			const answerResult = commandParserService.isCorrectAnswer(
+			const answerResult = this.commandParserService.isCorrectAnswer(
 				answer,
 				ctx.session.currentChapter,
 				ctx.session.translation
@@ -294,7 +299,7 @@ class Main {
 
 		let percent: string;
 		if (confidence === undefined) {
-			const canonicalAnswer = commandParserService.getCanonicalAnswer(
+			const canonicalAnswer = this.commandParserService.getCanonicalAnswer(
 				ctx.session.currentChapter,
 				ctx.session.translation
 			);
@@ -336,8 +341,16 @@ class Main {
 	}
 
 	private listeners(): void {
-		process.once('SIGINT', () => this.bot.stop('SIGINT'));
-		process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
+		process.once('SIGINT', () => this.shutdown());
+		process.once('SIGTERM', () => this.shutdown());
+	}
+
+	private async shutdown(): Promise<void> {
+		this.logger.info('\n⏸️  Shutting down gracefully...');
+		this.bot.stop('SIGINT');
+		this.bot.stop('SIGTERM');
+		this.logger.info('✅ Bot stopped.');
+		process.exit(0);
 	}
 }
 
