@@ -10,7 +10,7 @@ import { ILogObj, Logger } from 'tslog';
 
 import { Part } from '../models/Part';
 import similarityService from './similarity.service';
-import { TranslationData } from '../models/TranslationData';
+import { ChapterRequirement, TranslationData } from '../models/TranslationData';
 
 export interface ParsedCommand {
   action?: string;
@@ -43,7 +43,7 @@ class CommandParserService {
     // Try to match navigation commands
     if (commands?.navigation) {
       for (const pattern of commands.navigation.patterns || []) {
-        const regex = new RegExp(pattern, 'i');
+        const regex = this.getCompiledRegex(pattern);
         const match = regex.exec(normalized);
         if (match?.groups?.direction) {
           return {
@@ -57,7 +57,7 @@ class CommandParserService {
 
     if (commands?.actions) {
       for (const [actionName, actionConfig] of Object.entries(commands.actions)) {
-        const regex = new RegExp(actionConfig.pattern, 'i');
+        const regex = this.getCompiledRegex(actionConfig.pattern);
         const match = regex.exec(normalized);
         if (match) {
           const object = this.extractObject(normalized, actionConfig.objects || []);
@@ -71,6 +71,15 @@ class CommandParserService {
     }
 
     return { raw: normalized };
+  }
+
+  private readonly regexCache: Map<string, RegExp> = new Map();
+
+  private getCompiledRegex(pattern: string): RegExp {
+    if (!this.regexCache.has(pattern)) {
+      this.regexCache.set(pattern, new RegExp(pattern, 'i'));
+    }
+    return this.regexCache.get(pattern);
   }
 
   /**
@@ -121,9 +130,10 @@ class CommandParserService {
       return Array.isArray(answers) ? answers[0] : answers || '';
     }
 
-    // Build canonical answer from requirement
     if (requirement.type === 'navigation') {
-      return `go ${requirement.direction}`;
+      const direction = requirement.direction;
+      const commandPattern = translation.commands?.navigation?.patterns[0]; // Get the first pattern
+      return commandPattern ? commandPattern.replace(/<direction>/, direction) : `ir para ${direction}`; // Fallback if no pattern found
     } else if (requirement.type === 'action') {
       return requirement.object ? `${requirement.action} ${requirement.object}` : (requirement.action || '');
     }
@@ -176,7 +186,7 @@ class CommandParserService {
 
   private tryPatternMatch(
     answer: string,
-    requirement: any,
+    requirement: ChapterRequirement,
     translation: TranslationData
   ): CommandMatch {
     const patterns: string[] = [];

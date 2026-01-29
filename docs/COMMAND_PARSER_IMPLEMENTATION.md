@@ -81,7 +81,7 @@ Modified [`main.ts`](../src/main.ts) to:
 
 Added `answerSimilarityThreshold` to [`configuration.service.ts`](../src/services/configuration.service.ts):
 
-- Default: 0.75 (75% similarity required)
+- Default: 0.85 (85% similarity required)
 - Configurable via `ANSWER_SIMILARITY_THRESHOLD` environment variable
 
 ## Benefits

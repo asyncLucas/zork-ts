@@ -144,7 +144,7 @@
 		"VII": {
 			"type": "action",
 			"action": "pray",
-			"object": ""
+			"object": null
 		},
 		"VIII": {
 			"type": "action",

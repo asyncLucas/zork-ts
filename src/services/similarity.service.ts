@@ -20,7 +20,7 @@ class SimilarityService {
 		}
 
 		const longerLength = longer.length;
-		if (longerLength == 0) {
+		if (longerLength === 0) {
 			return 1;
 		}
 
@@ -37,12 +37,12 @@ class SimilarityService {
 			let lastValue = i;
 
 			for (let j = 0; j <= sequence2.length; j++) {
-				if (i == 0) {
+				if (i === 0) {
 					costs[j] = j;
 				} else if (j > 0) {
 					let newValue = costs[j - 1];
 
-					if (sequence1.charAt(i - 1) != sequence2.charAt(j - 1)) {
+					if (sequence1.charAt(i - 1) !== sequence2.charAt(j - 1)) {
 						newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
 					}
 
