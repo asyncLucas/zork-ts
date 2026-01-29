@@ -27,7 +27,8 @@
 	"dependencies": {
 		"dotenv": "^17.2.3",
 		"telegraf": "^4.16.3",
-		"telegraf-session-local": "^2.1.1"
+		"telegraf-session-local": "^2.1.1",
+		"tslog": "^4.10.2"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.45",

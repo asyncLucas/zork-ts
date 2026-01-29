@@ -10,9 +10,10 @@
 
 import 'dotenv/config';
 import fs from 'node:fs';
+import { Logger, ILogObj } from "tslog";
+import type { Message } from 'telegraf/types';
 import LocalSession from 'telegraf-session-local';
 import { Telegraf, Telegram, Markup } from 'telegraf';
-import type { Message } from 'telegraf/types';
 
 import { Part } from './models/Part';
 import { ZorkContext } from './models/ZorkContext';
@@ -25,10 +26,14 @@ class Main {
 	private userAttempts: number;
 	private telegram: Telegram;
 	private bot: Telegraf<ZorkContext>;
+	private readonly logger: Logger<ILogObj> = new Logger();
+
 
 	private iterator = this.chaptersGenerator();
 
-	public initialize(): void {
+	static readonly run = () => new Main().initialize();
+
+	private initialize(): void {
 		try {
 			this.createInstances();
 			this.initializeSession();
@@ -72,9 +77,11 @@ class Main {
 	private async startBot(): Promise<void> {
 		this.bot.start(async ctx => {
 			try {
+				this.logger.info(`New user started the bot: ${ctx.from?.username} '${ctx.from?.id}'`);
 				this.mission(ctx);
 				await this.languageSelection(ctx);
 			} catch (error) {
+				this.logger.error(`Error in /start command for user: ${ctx.from?.username} '${ctx.from?.id}'`, error);
 				this.sendErrorMessage(error);
 			}
 		});
@@ -106,6 +113,7 @@ class Main {
 		const currentChapter = ctx?.session?.currentChapter ?? this.iterator.next().value;
 		ctx.session = { answer: '', currentChapter, translation, language };
 		this.currentChapter(ctx);
+		this.logger.info(`User changed language to '${language}': ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
 
 	private getTranslation(language: string): TranslationData {
@@ -122,15 +130,17 @@ class Main {
 		if (!done) {
 			ctx.session.currentChapter = currentPart;
 			this.currentChapter(ctx);
+			this.logger.info(`User advanced to chapter '${currentPart}': ${ctx.from?.username} '${ctx.from?.id}'`);
 			return;
 		}
 
-		this.gameCompleted(ctx, ctx.session.translation.message['Game Completed']);
+		this.logger.info(`User completed the game: ${ctx.from?.username} '${ctx.from?.id}'`);
+		this.gameCompleted(ctx, ctx.session?.translation?.message?.['Game Completed']);
 	}
 
 	private currentChapter(ctx: ZorkContext): void {
-		ctx.reply(ctx.session.translation.message[ctx.session.currentChapter]);
-		setTimeout(() => ctx.reply(ctx.session.translation.message['What do you do? ']), 500);
+		ctx.reply(ctx.session?.translation?.message?.[ctx.session.currentChapter] || '');
+		setTimeout(() => ctx.reply(ctx.session?.translation?.message?.['What do you do? '] || ''), 500);
 	}
 
 	private gameCompleted(ctx: ZorkContext, message: string): void {
@@ -142,6 +152,7 @@ class Main {
 				.oneTime()
 				.resize()
 		);
+		this.logger.info(`User reached game completed state: ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
 
 	private *chaptersGenerator(): Generator<Part, void, undefined> {
@@ -154,6 +165,7 @@ class Main {
 			ctx.reply('⌛ Send /restart to restart the game');
 			ctx.reply('🌐 Send /language select a new idiom');
 			ctx.reply('📖 Send /chapter to get the current chapter description');
+			ctx.reply('🎒 Send /items to check your collected items');
 			ctx.reply('ℹ️ Send /info to get info about the game');
 		});
 
@@ -187,6 +199,7 @@ class Main {
 			this.resetState(ctx);
 			this.mission(ctx);
 			this.currentChapter(ctx);
+			this.logger.info(`User restarted the game: ${ctx.from?.username} '${ctx.from?.id}'`);
 		} catch (error) {
 			this.startBot();
 			this.sendErrorMessage(error);
@@ -204,7 +217,6 @@ class Main {
 			const answer = this.parseUserInput(ctx.text || '');
 			ctx.session.answer = answer;
 
-			// Check if user's answer is correct using new command parser
 			const answerResult = commandParserService.isCorrectAnswer(
 				answer,
 				ctx.session.currentChapter,
@@ -217,7 +229,6 @@ class Main {
 				return;
 			}
 
-			// Check for specific interactions
 			const correctInteration =
 				ctx.session?.translation?.interactions?.[ctx.session?.currentChapter]?.[answer];
 
@@ -232,9 +243,9 @@ class Main {
 	}
 
 	private incorrectAnswer(ctx: ZorkContext, incorrectAnswer: string, confidence?: number): void {
+		this.logger.info(`Incorrect answer by user: ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${incorrectAnswer}'`);
 		this.increaseUserAttempts();
 
-		// Use provided confidence or calculate it
 		let percent: string;
 		if (confidence === undefined) {
 			const canonicalAnswer = commandParserService.getCanonicalAnswer(
@@ -268,20 +279,8 @@ class Main {
 		this.bot.launch();
 	}
 
-	// @deprecated -- to be removed in future versions
-	private correctAnswer(ctx: ZorkContext, answer: string): boolean {
-		// This method is deprecated in favor of commandParserService.isCorrectAnswer
-		// Kept for backward compatibility
-		const result = commandParserService.isCorrectAnswer(
-			answer,
-			ctx.session.currentChapter,
-			ctx.session.translation
-		);
-		return result.matched;
-	}
-
 	private sendErrorMessage(error: any): void {
-		console.log(error);
+		this.logger.error('An unexpected error occurred:', error);
 		if (configurationService.chatId) {
 			this.telegram.sendMessage(
 				configurationService.chatId,
@@ -296,4 +295,4 @@ class Main {
 	}
 }
 
-new Main().initialize();
+Main.run();

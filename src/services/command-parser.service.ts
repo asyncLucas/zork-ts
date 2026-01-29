@@ -24,7 +24,7 @@ export interface CommandMatch {
 }
 
 class CommandParserService {
-  private readonly SIMILARITY_THRESHOLD = 0.75;
+  private readonly SIMILARITY_THRESHOLD = 0.85;
 
   /**
    * Parse user input into structured command
