@@ -267,13 +267,8 @@ class Main {
 			if (parsedCommand.action === 'take' && parsedCommand.object) {
 				this.addItemToInventory(ctx, parsedCommand.object);
 				ctx.reply(ctx.session.translation.message['TAKEN']?.replace('#item', parsedCommand.object) || `✅ Taken: ${parsedCommand.object}`);
+				this.logger.info(`User took an item: ${ctx.from?.username} '${ctx.from?.id}' - Item: '${parsedCommand.object}'`);
 			}
-
-			const answerResult = this.commandParserService.isCorrectAnswer(
-				answer,
-				ctx.session.currentChapter,
-				ctx.session.translation
-			);
 
 			const correctInteration =
 				ctx.session?.translation?.interactions?.[ctx.session?.currentChapter]?.[answer];
@@ -283,6 +278,12 @@ class Main {
 				this.logger.info(`User provided correct interaction for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${answer}'`);
 				return;
 			}
+
+			const answerResult = this.commandParserService.isCorrectAnswer(
+				answer,
+				ctx.session.currentChapter,
+				ctx.session.translation
+			);
 
 			if (answerResult.matched) {
 				this.resetUserAttempts();
