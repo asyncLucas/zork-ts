@@ -17,8 +17,8 @@
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "tsc",
-		"d:build": "docker build -t zork-bot:1.0 .",
-		"d:run": "docker run -d --name zork-bot --env-file .env zork-bot:1.0",
+		"d:build": "docker build -t zork-bot .",
+		"d:run": "docker run -d --name zork-bot --env-file .env zork-bot",
 		"start": "node dist/main.js",
 		"server": "nohup npm start > bot.log 2>&1 &",
 		"start:dev": "ts-node src/main.ts",
