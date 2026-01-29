@@ -183,9 +183,14 @@ class Main {
 	}
 
 	private restart(ctx: ZorkContext): void {
-		this.resetState(ctx);
-		this.mission(ctx);
-		this.currentChapter(ctx);
+		try {
+			this.resetState(ctx);
+			this.mission(ctx);
+			this.currentChapter(ctx);
+		} catch (error) {
+			this.startBot();
+			this.sendErrorMessage(error);
+		}
 	}
 
 	private resetState(ctx: ZorkContext): void {
@@ -277,7 +282,6 @@ class Main {
 
 	private sendErrorMessage(error: any): void {
 		console.log(error);
-
 		if (configurationService.chatId) {
 			this.telegram.sendMessage(
 				configurationService.chatId,
