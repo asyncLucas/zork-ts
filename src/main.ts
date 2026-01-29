@@ -10,7 +10,7 @@
 
 import 'dotenv/config';
 import fs from 'node:fs';
-import { Logger, ILogObj } from "tslog";
+import { Logger } from "tslog";
 import type { Message } from 'telegraf/types';
 import LocalSession from 'telegraf-session-local';
 import { Telegraf, Telegram, Markup } from 'telegraf';
@@ -26,7 +26,7 @@ class Main {
 	private userAttempts: number;
 	private telegram: Telegram;
 	private bot: Telegraf<ZorkContext>;
-	private readonly logger: Logger<ILogObj> = new Logger();
+	private readonly logger = new Logger({ name: "main", type: "pretty" });
 
 
 	private iterator = this.chaptersGenerator();
@@ -112,7 +112,7 @@ class Main {
 		ctx.session = {
 			answer: '',
 			language,
-			currentChapter: ctx?.session?.currentChapter ?? this.iterator.next().value,
+			currentChapter: ctx?.session?.currentChapter,
 			translation: this.getTranslation(language),
 			items: ctx?.session?.items ?? []
 		};
@@ -159,8 +159,8 @@ class Main {
 		this.logger.info(`User reached game completed state: ${ctx.from?.username} '${ctx.from?.id}'`);
 	}
 
-	private *chaptersGenerator(): Generator<Part, void, undefined> {
-		yield* [Part.I, Part.II, Part.III, Part.IV, Part.V, Part.VI, Part.VII, Part.VIII, Part.IX, Part.X, Part.XI, Part.XII, Part.XIII, Part.XIV, Part.XV];
+	private *chaptersGenerator(): Generator<Part, Part, undefined> {
+		return yield* [Part.I, Part.II, Part.III, Part.IV, Part.V, Part.VI, Part.VII, Part.VIII, Part.IX, Part.X, Part.XI, Part.XII, Part.XIII, Part.XIV, Part.XV];
 	}
 
 	private usefulCommands(): void {
@@ -214,7 +214,7 @@ class Main {
 
 	private resetState(ctx: ZorkContext): void {
 		this.iterator = this.chaptersGenerator();
-		ctx.session.currentChapter = this.iterator.next().value as Part;
+		ctx.session.currentChapter = this.iterator.next().value;
 		ctx.session.items = [];
 		this.resetUserAttempts();
 	}
@@ -226,7 +226,7 @@ class Main {
 		if (items.length === 0) {
 			ctx.reply(translation.message['No Items'] || '🎒 Your inventory is empty.');
 		} else {
-			const itemList = items.map((item, index) => `${index + 1}. ${item}`).join('\n');
+			const itemList = items.map((item: string, index: number) => `${index + 1}. ${item}`).join('\n');
 			ctx.reply(`${translation.message['Items List'] || '🎒 Your inventory:'}\n\n${itemList}`);
 		}
 

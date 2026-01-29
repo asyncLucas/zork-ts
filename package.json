@@ -1,7 +1,7 @@
 {
 	"name": "zork-ts",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A text-based adventure game bot for Telegram, inspired by Zork.",
 	"keywords": [
 		"zork",
 		"bot",
@@ -16,13 +16,13 @@
 	"author": "Lucas Silva",
 	"main": "dist/main.js",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && tsc-alias",
+		"dev": "tsx watch src/main.ts",
 		"d:build": "docker build -t zork-bot .",
 		"d:run": "docker run -d --name zork-bot --env-file .env zork-bot",
 		"start": "node dist/main.js",
-		"dev": "ts-node src/main.ts",
 		"server": "nohup npm start > bot.log 2>&1 &",
-		"start:console": "ts-node src/system/app.ts"
+		"start:console": "tsx src/system/app.ts"
 	},
 	"dependencies": {
 		"dotenv": "^17.2.3",
@@ -32,8 +32,9 @@
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.45",
-		"ts-node": "^10.4.0",
-		"typescript": "^4.5.5"
+		"typescript": "^4.5.5",
+		"tsc-alias": "^1.8.16",
+		"tsx": "^4.21.0"
 	},
 	"engines": {
 		"node": "22.18.0",

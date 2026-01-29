@@ -6,7 +6,7 @@
  * and identifies intent (action, direction, object)
  */
 
-import { ILogObj, Logger } from 'tslog';
+import { Logger } from 'tslog';
 
 import { Part } from '../models/Part';
 import similarityService from './similarity.service';
@@ -27,7 +27,7 @@ export interface CommandMatch {
 
 class CommandParserService {
   private readonly SIMILARITY_THRESHOLD = 0.85;
-  private readonly logger: Logger<ILogObj> = new Logger();
+  private readonly logger = new Logger({ name: "command-parser", type: "pretty" });
 
   /**
    * Parse user input into structured command
