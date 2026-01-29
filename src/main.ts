@@ -112,7 +112,7 @@ class Main {
 		ctx.session = {
 			answer: '',
 			language,
-			currentChapter: ctx?.session?.currentChapter,
+			currentChapter: ctx?.session?.currentChapter ?? this.iterator.next().value,
 			translation: this.getTranslation(language),
 			items: ctx?.session?.items ?? []
 		};
@@ -143,7 +143,15 @@ class Main {
 	}
 
 	private currentChapter(ctx: ZorkContext): void {
-		ctx.reply(ctx.session?.translation?.message?.[ctx.session.currentChapter] || '');
+		const message = ctx.session?.translation?.message?.[ctx.session?.currentChapter];
+		if (!message) {
+			this.logger.error(`Translation missing for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}'`);
+			ctx.reply('⚠️ Oops! Something went wrong. Please try again later.');
+			return;
+		}
+
+		this.logger.info(`User is at chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}'`);
+		ctx.reply(message);
 		setTimeout(() => ctx.reply(ctx.session?.translation?.message?.['What do you do? '] || ''), 500);
 	}
 

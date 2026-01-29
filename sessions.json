@@ -3,75 +3,407 @@
     {
       "id": "145510692:145510692",
       "data": {
-        "answer": "open trunk",
-        "currentChapter": "VI",
+        "answer": "",
+        "language": "pt",
+        "currentChapter": "I",
         "translation": {
           "message": {
-            "What do you do? ": "\nWhat do you do? ",
-            "Do you want to continue? (Y/N) ": "\nDo you want to continue? (Y/N) ",
-            "Suicide": "You throw yourself down the staircase as an attempt at suicide. You die. 💀",
-            "Game Over": "💀💀💀 Game Over! 💀💀💀",
-            "Game Completed": "🎉  You have found the Jade Statue 🏆 and have completed your quest! 🎉",
-            "Try again": "Keep trying, your answer is #percent% correct... You have #attempts attempts left...",
-            "I": "✅1️⃣✅ West of House 🏠\n You are standing in an open field west of a white house, with a boarded front door. 🚪\n There is a small mailbox here. 📫",
-            "II": "✅2️⃣✅ South of House 🏠\n You are facing the south side of a white house. There is no door here, and all the windows are boarded. 🚪",
-            "III": "✅3️⃣✅ You are in a clearing, with a forest surrounding you on all sides. A path leads south. 🧭\nThere is an open grating, descending into darkness.",
-            "IV": "✅4️⃣✅ You are in a tiny cave with a dark, forbidding staircase leading down.\n 💀 There is a skeleton of a human male in one corner.",
-            "V": "✅5️⃣✅ You have entered a mud-floored room.\n Lying half buried in the mud is an old trunk, bulging with jewels."
+            "What do you do? ": "\nO que você faz? ",
+            "Do you want to continue? (Y/N) ": "\nVocê deseja continuar? (S/N) ",
+            "Suicide": "Você se joga escada abaixo como uma tentativa de suicídio. Você morre. 💀",
+            "Game Over": "💀💀💀 Você Perdeu! 💀💀💀",
+            "Game Completed": "🎉 Você encontrou a Estátua de Jade 🏆 e completou sua missão! 🎉",
+            "Try again": "Continue tentando, sua resposta está #percent% correta... Você possui #attempts tentativas restantes...",
+            "Items List": "🎒 Seu inventário:",
+            "No Items": "🎒 Seu inventário está vazio. Explore e colete itens durante sua jornada!",
+            "TAKEN": "✅ Pegou: #item",
+            "I": "✅1️⃣✅ Oeste da casa 🏠\n Você está de pé em um campo aberto a oeste de uma casa branca, com uma porta da frente com tábuas. 🚪\n Há uma pequena caixa de correio aqui. 📫",
+            "II": "✅2️⃣✅ Esta é uma floresta, com árvores em todas as direções. A leste, parece haver luz do sol.",
+            "III": "✅3️⃣✅ Você está em uma clareira, com uma floresta ao seu redor por todos os lados. Um caminho leva ao sul. 🧭\nHá uma grade aberta, e escadas descendo para a escuridão.",
+            "IV": "✅4️⃣✅ Você está em uma pequena caverna com uma escada escura e proibida que leva para baixo.\n 💀 Há um esqueleto de um homem humano em um canto.",
+            "V": "✅5️⃣✅ Você entrou em uma sala com chão de barro.\n Deitado meio enterrado na lama está um baú velho, cheio de joias.",
+            "VI": "✅6️⃣✅ Templo 🏛️\n Você está na extremidade norte de um grande templo. Na parede leste há uma inscrição antiga. Abaixo há uma escada descendo. ⬇️\n Há um sino de latão aqui. 🔔",
+            "VII": "✅7️⃣✅ Altar 🕯️\n Você está na extremidade sul de um grande templo. Na sua frente está um altar. Em um canto há um pequeno buraco no chão. 🕳️\n No altar há um grande livro preto, aberto na página 569. 📖",
+            "VIII": "✅8️⃣✅ Saguão da Barragem 🌊\n Esta sala parece ter sido a sala de espera para passeios na barragem. Há portas ao norte e leste marcadas 'Privado'. 🚪\n Há uma caixa de fósforos aqui. 🔥",
+            "IX": "✅9️⃣✅ Abismo 🌉\n Um abismo corre de sudoeste a nordeste. Você está no lado sul onde uma fenda se abre em uma passagem. ⛰️",
+            "X": "✅🔟✅ Sala de Manutenção 🔧\n Esta parece ser uma sala de manutenção. A maioria dos equipamentos se foi. Na parede há botões coloridos azul, amarelo, marrom e vermelho. 🔴🟡🟤🔵\n Há uma chave inglesa e uma chave de fenda aqui. 🔧",
+            "XI": "✅1️⃣1️⃣✅ Sala Barulhenta 📢\n Você está em uma grande sala com um teto perdido na escuridão. A sala é ensurdecedoramente barulhenta com sons de água correndo. 🌊💧\n Há uma grande barra de platina no chão. ✨",
+            "XII": "✅1️⃣2️⃣✅ Entrada do Hades 🔥\n Você está do lado de fora de um grande portal inscrito 'Abandone toda esperança vós que aqui entrais!' 💀\n Espíritos malignos bloqueiam o caminho. 👻",
+            "XIII": "✅1️⃣3️⃣✅ Sala do Espelho 🪞\n Você está em uma grande sala quadrada. Na parede sul há um enorme espelho ocupando toda a parede. ✨",
+            "XIV": "✅1️⃣4️⃣✅ Sala do Morcego 🦇\n Você está em uma pequena sala com portas ao leste e ao sul. No canto há um grande morcego vampiro. 🦇\n Há uma estatueta de jade requintada aqui. 🗿",
+            "XV": "✅1️⃣5️⃣✅ Caverna de Areia 🏖️\n Esta é uma caverna cheia de areia. Você nota que a areia parece recentemente perturbada. 🏝️\n Algo valioso pode estar enterrado aqui! 💎"
           },
-          "availableAnswers": {
-            "I": [
-              "go south"
-            ],
-            "II": [
-              "go east"
-            ],
-            "III": [
-              "descend staircase"
-            ],
-            "IV": [
-              "descend staircase",
-              "go down staircase",
-              "scale staircase"
-            ],
-            "V": [
-              "open trunk",
-              "open the trunk"
-            ]
+          "commands": {
+            "navigation": {
+              "patterns": [
+                "^(ir|va|vou|mover|andar|caminhar)\\s+(para\\s+)?(o\\s+)?(?<direction>\\w+)"
+              ],
+              "synonyms": {
+                "sul": [
+                  "s",
+                  "south"
+                ],
+                "leste": [
+                  "l",
+                  "e",
+                  "east"
+                ],
+                "oeste": [
+                  "o",
+                  "w",
+                  "west"
+                ],
+                "norte": [
+                  "n",
+                  "north"
+                ],
+                "sudoeste": [
+                  "so",
+                  "sw"
+                ],
+                "sudeste": [
+                  "se"
+                ],
+                "noroeste": [
+                  "no",
+                  "nw"
+                ],
+                "nordeste": [
+                  "ne"
+                ]
+              }
+            },
+            "actions": {
+              "descend": {
+                "pattern": "^(descer|desco|desca|baixar|ir para baixo)",
+                "objects": [
+                  "escadas",
+                  "escada",
+                  "staircase",
+                  "stairs"
+                ]
+              },
+              "open": {
+                "pattern": "^(abrir|abro|abra|destrancar)",
+                "objects": [
+                  "bau",
+                  "trunk",
+                  "chest",
+                  "caixa de correio",
+                  "mailbox"
+                ]
+              },
+              "take": {
+                "pattern": "^(pegar|pegue|peguo|agarrar|pego)",
+                "objects": [
+                  "caixa de correio",
+                  "mailbox",
+                  "tabuas",
+                  "boards",
+                  "esqueleto",
+                  "skeleton",
+                  "folheto",
+                  "leaflet",
+                  "sino",
+                  "bell",
+                  "livro",
+                  "book",
+                  "fosforos",
+                  "matches",
+                  "matchbook",
+                  "chave inglesa",
+                  "wrench",
+                  "chave de fenda",
+                  "screwdriver",
+                  "barra",
+                  "platina",
+                  "bar",
+                  "platinum",
+                  "estatueta",
+                  "jade",
+                  "figurine"
+                ]
+              },
+              "read": {
+                "pattern": "^(ler|leia|leio|olhar|examinar)",
+                "objects": [
+                  "folheto",
+                  "leaflet",
+                  "livro",
+                  "book",
+                  "inscricao",
+                  "inscription"
+                ]
+              },
+              "drop": {
+                "pattern": "^(soltar|solto|largar|descartar)",
+                "objects": [
+                  "folheto",
+                  "leaflet",
+                  "sino",
+                  "bell",
+                  "livro",
+                  "book"
+                ]
+              },
+              "light": {
+                "pattern": "^(iluminar|ilumine|ilumino|acender)",
+                "objects": [
+                  "quarto",
+                  "sala",
+                  "room"
+                ]
+              },
+              "smash": {
+                "pattern": "^(esmagar|esmague|esmago|quebrar|quebro|destruir)",
+                "objects": [
+                  "esqueleto",
+                  "skeleton"
+                ]
+              },
+              "look": {
+                "pattern": "^(olhar|olho|ver|examinar|inspecionar)",
+                "objects": [
+                  "casa",
+                  "house",
+                  "caixa de correio",
+                  "mailbox",
+                  "espelho",
+                  "mirror",
+                  "altar",
+                  "botoes",
+                  "buttons"
+                ]
+              },
+              "ring": {
+                "pattern": "^(tocar|toque|soar|sacudir)",
+                "objects": [
+                  "sino",
+                  "bell"
+                ]
+              },
+              "pray": {
+                "pattern": "^(rezar|ore|adorar|ajoelhar)",
+                "objects": []
+              },
+              "push": {
+                "pattern": "^(empurrar|empurre|pressionar|apertar|ativar)",
+                "objects": [
+                  "botao",
+                  "button",
+                  "botao amarelo",
+                  "yellow button",
+                  "botao vermelho",
+                  "red button",
+                  "botao azul",
+                  "blue button",
+                  "botao marrom",
+                  "brown button"
+                ]
+              },
+              "turn": {
+                "pattern": "^(girar|gire|torcer|rodar)",
+                "objects": [
+                  "parafuso",
+                  "bolt",
+                  "valvula",
+                  "valve"
+                ]
+              },
+              "rub": {
+                "pattern": "^(esfregar|esfregue|tocar|sentir)",
+                "objects": [
+                  "espelho",
+                  "mirror"
+                ]
+              },
+              "dig": {
+                "pattern": "^(cavar|cave|escavar|desenterrar)",
+                "objects": [
+                  "areia",
+                  "sand",
+                  "chao",
+                  "ground"
+                ]
+              },
+              "climb": {
+                "pattern": "^(escalar|escale|subir|trepar)",
+                "objects": [
+                  "arvore",
+                  "tree",
+                  "escada",
+                  "ladder"
+                ]
+              },
+              "echo": {
+                "pattern": "^(eco|gritar|berrar)",
+                "objects": []
+              },
+              "ulysses": {
+                "pattern": "^(ulysses|ulisses|odysseus|odisseu)",
+                "objects": []
+              }
+            }
+          },
+          "chapterRequirements": {
+            "I": {
+              "type": "navigation",
+              "direction": "sudoeste"
+            },
+            "II": {
+              "type": "navigation",
+              "direction": "leste"
+            },
+            "III": {
+              "type": "action",
+              "action": "descend",
+              "object": "escadas"
+            },
+            "IV": {
+              "type": "action",
+              "action": "descend",
+              "object": "escadas"
+            },
+            "V": {
+              "type": "action",
+              "action": "open",
+              "object": "bau"
+            },
+            "VI": {
+              "type": "action",
+              "action": "take",
+              "object": "sino"
+            },
+            "VII": {
+              "type": "action",
+              "action": "pray",
+              "object": ""
+            },
+            "VIII": {
+              "type": "action",
+              "action": "take",
+              "object": "fosforos"
+            },
+            "IX": {
+              "type": "navigation",
+              "direction": "nordeste"
+            },
+            "X": {
+              "type": "action",
+              "action": "push",
+              "object": "botao amarelo"
+            },
+            "XI": {
+              "type": "action",
+              "action": "echo",
+              "object": ""
+            },
+            "XII": {
+              "type": "action",
+              "action": "ring",
+              "object": "sino"
+            },
+            "XIII": {
+              "type": "action",
+              "action": "rub",
+              "object": "espelho"
+            },
+            "XIV": {
+              "type": "action",
+              "action": "take",
+              "object": "jade"
+            },
+            "XV": {
+              "type": "action",
+              "action": "dig",
+              "object": "areia"
+            }
           },
           "interactions": {
             "I": {
-              "take mailbox": "It is securely anchored. 🔒",
-              "open mailbox": "📫 Opening the small mailbox reveals a leaflet.",
-              "go east": "🚪 The door is boarded and you cannot remove the boards.",
-              "open door": "🚪 The door cannot be opened.",
-              "take boards": "The boards are securely fastened.",
-              "look at house": "🏠 The house is a beautiful colonial house which is painted white. It is clear that the owners must have been extremely wealthy.",
-              "read leaflet": "🎈 WELCOME TO ZORK the Unofficial TypeScript Version of Zork. 🎈\n ZORK is a game of adventure, danger, and low cunning. ☠️ \n In it you will explore some of the most amazing territory ever seen by mortals. 🗺️ \n No computer should be without one! 💻",
-              "drop leaflet": "Dropped. 🍃"
+              "pegar caixa de correio": "Está fortemente presa. 🔒",
+              "abrir caixa de correio": "📫 Abrindo a pequena caixa de correio revela um folheto. 📜",
+              "ir para leste": "🚪 A porta está tapada e você não pode remover as tábuas.",
+              "abrir porta": "🚪 A porta não pode ser aberta.",
+              "pegar tabuas": "As pranchas estão bem presas.",
+              "olhar casa": "🏠 A casa é uma bela casa colonial pintada de branco. É claro que os proprietários devem ter sido extremamente ricos.",
+              "ler folheto": "🎈 BEM-VINDO AO ZORK a versão não oficial escrita em TypeScript. 🎈\n ZORK é um jogo de aventura, perigo e pouca astúcia. ☠️ \n Nele você explorará alguns dos territórios mais incríveis já vistos pelos mortais. 🗺️ \n Nenhum computador deve ficar sem um! 💻",
+              "soltar folheto": "Solto. 🍃"
             },
             "II": {
-              "go west": "You would need a machete 🔪 to go further west.",
-              "go north": "⛰️ The forest becomes impenetrable to the North.",
-              "go south": "⛈️ Storm-tossed trees block your way."
+              "ir para oeste": "Você precisaria de um facão 🔪 para ir mais para o oeste.",
+              "ir para norte": "⛰️ A floresta torna-se impenetrável ao norte.",
+              "ir para sul": "⛈️ Árvores lançadas pela tempestade bloqueiam seu caminho."
             },
             "III": {
-              "light up room": "💡 You would need a torch or lamp to do that.",
-              "go south": "👹 You see a large ogre and turn around."
+              "iluminar quarto": "💡 Você precisaria de uma tocha ou lâmpada para fazer isso.",
+              "ir para sul": "👹 Você vê um grande ogro e se vira."
             },
             "IV": {
-              "take skeleton": "😐 Why would you do that? Are you some sort of sicko?",
-              "smash skeleton": "😐 Sick person. Have some respect mate.",
-              "light up room": "💡 You would need a torch or lamp to do that.",
-              "break skeleton": "⁉️ I have two questions: Why and With What?"
+              "pegar esqueleto": "😐 Por que você faria isso? Você é algum tipo de doente?",
+              "esmagar esqueleto": "😐 Pessoa doente. Tenha algum respeito amigo.",
+              "iluminar quarto": "💡 Você precisaria de uma tocha ou lâmpada para fazer isso.",
+              "quebrar esqueleto": "⁉️ Tenho duas perguntas: Por que e com o quê?"
             },
             "V": {
-              "open trunk": "🏆🏆🏆"
+              "abrir bau": "🏆🏆🏆"
+            },
+            "VI": {
+              "ler inscricao": "A inscrição está em uma língua antiga. Você consegue distinguir a palavra 'REZAR'. 🙏",
+              "ir para leste": "Você encontra uma pequena sala egípcia com hieróglifos. Não há nada de valor aqui.",
+              "pegar sino": "Você pega o sino de latão. Ele parece pesado e antigo. 🔔"
+            },
+            "VII": {
+              "ler livro": "📖 O livro contém orações e encantamentos antigos. Você sente uma presença mística.",
+              "rezar": "✨ Uma luz brilhante enche a sala! Você é transportado para uma clareira na floresta.",
+              "pegar livro": "O livro é muito pesado e parece preso ao altar por alguma força mística. 🚫"
+            },
+            "VIII": {
+              "pegar fosforos": "Você pega a caixa de fósforos. Ela diz 'Visite a Bela FCD#3'. 🔥",
+              "ir para norte": "Você entra em uma sala de manutenção com botões coloridos.",
+              "ir para leste": "Você vê vários equipamentos de manutenção espalhados."
+            },
+            "IX": {
+              "ir para sudoeste": "O caminho é muito estreito e perigoso. ⚠️",
+              "ir para nordeste": "Você navega cuidadosamente pela borda do abismo indo para nordeste. 🌉",
+              "olhar para baixo": "Você vê um abismo profundo com água fluindo lá embaixo. 🌊"
+            },
+            "X": {
+              "apertar botao amarelo": "Clique! ✅ Você ouve máquinas zumbindo em algum lugar.",
+              "apertar botao vermelho": "⚠️ Luzes de aviso piscam! Você rapidamente recua.",
+              "apertar botao azul": "Nada acontece. O botão parece inativo. 💤",
+              "pegar chave inglesa": "Você pega a pesada chave inglesa. 🔧",
+              "pegar chave de fenda": "Você pega a chave de fenda. 🪛"
+            },
+            "XI": {
+              "eco": "🔊 Você grita 'ECO!' A acústica muda sutilmente. O barulho ensurdecedor se torna suportável!",
+              "pegar barra": "Você pega cuidadosamente a valiosa barra de platina. ✨",
+              "ir para cima": "Você sobe a escadaria de pedra. 🪜"
+            },
+            "XII": {
+              "tocar sino": "🔔 O sino fica vermelho quente e cai! Os espíritos congelam de terror quando um poder antigo se manifesta.",
+              "ir para sul": "👻 Os espíritos malignos bloqueiam seu caminho, zombando e rindo.",
+              "ler livro": "📖 Cada palavra reverbera poderosamente. Uma voz comanda 'Vão embora, demônios!' Os espíritos fogem!"
+            },
+            "XIII": {
+              "esfregar espelho": "🪞 Ao tocar o espelho, ele ondula como água! Há um estrondo profundo vindo de dentro da terra.",
+              "olhar espelho": "Você vê seu reflexo, mas algo parece... diferente nele. 👤",
+              "quebrar espelho": "Isso traria sete anos de azar! Você reconsidera. 🚫"
+            },
+            "XIV": {
+              "pegar jade": "🗿 Você pega cuidadosamente a requintada estatueta de jade. É notavelmente detalhada!",
+              "olhar morcego": "🦇 O morcego vampiro está pendurado de cabeça para baixo, segurando o nariz. Ele parece repelido por algo...",
+              "pegar morcego": "O morcego voa furiosamente! 🦇💨"
+            },
+            "XV": {
+              "cavar areia": "⛏️ Você cava na areia... Você encontrou um lindo escaravelho! 💎",
+              "pegar areia": "A areia escorrega entre seus dedos. ⏳",
+              "olhar areia": "A areia parece recentemente perturbada, como se algo tivesse sido enterrado aqui. 🔍"
             }
           },
           "info": "/**\n ZORK I: The Great Underground Empire\n Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\n ZORK is a registered trademark of Infocom, Inc.\n Revision 88 / Serial number 840726\n Source at: https://web.mit.edu/marleigh/www/portfolio/Files/zork/transcript.html\n/"
         },
-        "language": "en"
+        "items": []
       }
     }
   ]
