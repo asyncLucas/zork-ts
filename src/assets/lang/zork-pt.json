@@ -43,7 +43,7 @@
 		},
 		"actions": {
 			"descend": {
-				"pattern": "^(descer|desco|desca|baixar|ir para baixo)",
+				"pattern": "^(descer|desco|desca|baixar|ir para baixo)\\s*(a\\s+)?",
 				"objects": ["escadas", "escada", "staircase", "stairs"]
 			},
 			"open": {
@@ -52,7 +52,7 @@
 			},
 			"take": {
 				"pattern": "^(pegar|pegue|peguo|agarrar|pego)",
-				"objects": ["caixa de correio", "mailbox", "tabuas", "boards", "esqueleto", "skeleton", "folheto", "leaflet", "sino", "bell", "livro", "book", "fosforos", "matches", "matchbook", "chave inglesa", "wrench", "chave de fenda", "screwdriver", "barra", "platina", "bar", "platinum", "estatueta", "jade", "figurine"]
+				"objects": ["caixa de correio", "mailbox", "tabuas", "boards", "esqueleto", "skeleton", "folheto", "leaflet", "sino", "bell", "livro", "book", "fosforos", "matches", "matchbook", "chave inglesa", "wrench", "chave de fenda", "screwdriver", "barra", "platina", "bar", "platinum", "estatueta", "jade", "figurine", "joias"]
 			},
 			"read": {
 				"pattern": "^(ler|leia|leio|olhar|examinar)",
@@ -79,7 +79,7 @@
 				"objects": ["sino", "bell"]
 			},
 			"pray": {
-				"pattern": "^(rezar|ore|adorar|ajoelhar)",
+				"pattern": "^(rezar|rezo|ore|oro|adorar|ajoelhar)",
 				"objects": []
 			},
 			"push": {
@@ -213,7 +213,7 @@
 			"quebrar esqueleto": "⁉️ Tenho duas perguntas: Por que e com o quê?"
 		},
 		"V": {
-			"abrir bau": "🏆🏆🏆"
+			"pegar joias": "💎 As joias são muito pesadas para você carregar. Talvez um baú seria melhor."
 		},
 		"VI": {
 			"ler inscricao": "A inscrição está em uma língua antiga. Você consegue distinguir a palavra 'REZAR'. 🙏",

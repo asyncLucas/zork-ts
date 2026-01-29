@@ -3,9 +3,9 @@
     {
       "id": "145510692:145510692",
       "data": {
-        "answer": "",
+        "answer": "pego o livro",
         "language": "pt",
-        "currentChapter": "I",
+        "currentChapter": "VII",
         "translation": {
           "message": {
             "What do you do? ": "\nO que você faz? ",
@@ -75,7 +75,7 @@
             },
             "actions": {
               "descend": {
-                "pattern": "^(descer|desco|desca|baixar|ir para baixo)",
+                "pattern": "^(descer|desco|desca|baixar|ir para baixo)\\s*(a\\s+)?",
                 "objects": [
                   "escadas",
                   "escada",
@@ -121,7 +121,8 @@
                   "platinum",
                   "estatueta",
                   "jade",
-                  "figurine"
+                  "figurine",
+                  "joias"
                 ]
               },
               "read": {
@@ -183,7 +184,7 @@
                 ]
               },
               "pray": {
-                "pattern": "^(rezar|ore|adorar|ajoelhar)",
+                "pattern": "^(rezar|rezo|ore|oro|adorar|ajoelhar)",
                 "objects": []
               },
               "push": {
@@ -277,7 +278,7 @@
             "VII": {
               "type": "action",
               "action": "pray",
-              "object": ""
+              "object": null
             },
             "VIII": {
               "type": "action",
@@ -346,7 +347,7 @@
               "quebrar esqueleto": "⁉️ Tenho duas perguntas: Por que e com o quê?"
             },
             "V": {
-              "abrir bau": "🏆🏆🏆"
+              "pegar joias": "💎 As joias são muito pesadas para você carregar. Talvez um baú seria melhor."
             },
             "VI": {
               "ler inscricao": "A inscrição está em uma língua antiga. Você consegue distinguir a palavra 'REZAR'. 🙏",
@@ -403,7 +404,11 @@
           },
           "info": "/**\n ZORK I: The Great Underground Empire\n Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\n ZORK is a registered trademark of Infocom, Inc.\n Revision 88 / Serial number 840726\n Source at: https://web.mit.edu/marleigh/www/portfolio/Files/zork/transcript.html\n/"
         },
-        "items": []
+        "items": [
+          "folheto",
+          "sino",
+          "livro"
+        ]
       }
     }
   ]

@@ -83,6 +83,7 @@ class Main {
 		this.bot.start(async ctx => {
 			try {
 				this.logger.info(`New user started the bot: ${ctx.from?.username} '${ctx.from?.id}'`);
+				this.resetState(ctx);
 				this.mission(ctx);
 				await this.languageSelection(ctx);
 			} catch (error) {
@@ -274,22 +275,29 @@ class Main {
 				ctx.session.translation
 			);
 
-			if (answerResult.matched) {
-				this.resetUserAttempts();
-				this.nextChapter(ctx);
-				return;
-			}
-
 			const correctInteration =
 				ctx.session?.translation?.interactions?.[ctx.session?.currentChapter]?.[answer];
 
 			if (correctInteration) {
 				ctx.reply(correctInteration);
-			} else if (this.maximumAttemptsReachedByTheUser) {
-				this.gameCompleted(ctx, ctx.session.translation.message['Game Over']);
-			} else {
-				this.incorrectAnswer(ctx, answer, answerResult.confidence);
+				this.logger.info(`User provided correct interaction for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${answer}'`);
+				return;
 			}
+
+			if (answerResult.matched) {
+				this.resetUserAttempts();
+				this.nextChapter(ctx);
+				this.logger.info(`User provided correct answer for chapter '${ctx.session?.currentChapter}': ${ctx.from?.username} '${ctx.from?.id}' - Answer: '${answer}'`);
+				return;
+			}
+
+			if (this.maximumAttemptsReachedByTheUser) {
+				this.gameCompleted(ctx, ctx.session.translation.message['Game Over']);
+				this.logger.info(`User reached maximum attempts and game over: ${ctx.from?.username} '${ctx.from?.id}'`);
+				return;
+			}
+
+			this.incorrectAnswer(ctx, answer, answerResult.confidence);
 		});
 	}
 
